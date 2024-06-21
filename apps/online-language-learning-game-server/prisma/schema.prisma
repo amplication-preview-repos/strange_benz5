@@ -1,0 +1,76 @@
+datasource db {
+  provider = "mysql"
+  url      = env("DB_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Level {
+  createdAt DateTime  @default(now())
+  id        String    @id @default(cuid())
+  name      String?
+  order     Int?
+  stations  Station[]
+  updatedAt DateTime  @updatedAt
+}
+
+model Station {
+  activities Activity[]
+  createdAt  DateTime   @default(now())
+  id         String     @id @default(cuid())
+  level      Level?     @relation(fields: [levelId], references: [id])
+  levelId    String?
+  name       String?
+  order      Int?
+  updatedAt  DateTime   @updatedAt
+}
+
+model Activity {
+  achievements Achievement[]
+  createdAt    DateTime      @default(now())
+  id           String        @id @default(cuid())
+  name         String?
+  order        Int?
+  station      Station?      @relation(fields: [stationId], references: [id])
+  stationId    String?
+  updatedAt    DateTime      @updatedAt
+}
+
+model Achievement {
+  activity   Activity?                  @relation(fields: [activityId], references: [id])
+  activityId String?
+  createdAt  DateTime                   @default(now())
+  id         String                     @id @default(cuid())
+  points     Int?
+  rewardType EnumAchievementRewardType?
+  student    Student?                   @relation(fields: [studentId], references: [id])
+  studentId  String?
+  updatedAt  DateTime                   @updatedAt
+}
+
+model Student {
+  achievements Achievement[]
+  createdAt    DateTime      @default(now())
+  email        String?
+  id           String        @id @default(cuid())
+  updatedAt    DateTime      @updatedAt
+  username     String?
+}
+
+model User {
+  createdAt DateTime @default(now())
+  email     String?  @unique
+  firstName String?
+  id        String   @id @default(cuid())
+  lastName  String?
+  password  String
+  roles     Json
+  updatedAt DateTime @updatedAt
+  username  String   @unique
+}
+
+enum EnumAchievementRewardType {
+  Option1
+}
